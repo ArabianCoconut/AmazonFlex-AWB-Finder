@@ -9,11 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// connectandupload connects to a MongoDB database and uploads a document.
-// It first attempts to load environment variables from a local .env file.
-// If the .env file is not found, it falls back to loading environment variables from the system.
-// The function then uses these environment variables to configure the MongoDB client and collection.
-// Finally, it inserts a document with a single field "name" and value "pi" into the specified collection.
+// ConnectandUpload connects to a MongoDB database and uploads a document with the provided details.
+// It retrieves the database configuration from environment variables.
+//
+// Parameters:
+//   - awb: The airway bill number to be inserted.
+//   - datetime: The datetime string to be inserted.
+//   - remark: The remark string to be inserted.
+//
+// Environment Variables:
+//   - DB_NAME: The name of the database.
+//   - DB_COLLECTION: The name of the collection.
+//   - DB_LOGIN: The MongoDB connection URI.
+//
+// Logs:
+//   - Logs an error if the connection to the database fails.
+//   - Logs an error if the document insertion fails.
+//   - Logs a success message if the document is inserted successfully.
 func ConnectandUpload(awb string, datetime string, remark string) {
 	var mongoConfig struct {
 		Database     string

@@ -1,6 +1,6 @@
-# AmazonFlex Order Tracker
+# AmazonFlex AWB Finder
 
-This project is designed to help track orders for Amazon Flex drivers and record any issues for later records. It consists of an HTML frontend and a Go backend.
+The AmazonFlex AWB Finder is a tool or application designed to assist Amazon Flex drivers in quickly locating, organizing, and referencing AWB (Air Waybill) numbers and associated delivery dates. This tool addresses common challenges faced by drivers, such as keeping track of numerous AWB numbers for packages and ensuring they are associated with the correct delivery schedule and to be later referenced when required.
 
 ## Project Structure
 
