@@ -138,16 +138,14 @@ Functions:
       </div>
 
       <div class="input-field">
-        <input id="awb" type="text" class="validate" />
+        <input id="awb" type="text" class="validate" required />
         <label for="awb">AWB</label>
       </div>
       <div class="input-field">
-        <select id="remark">
+        <select id="remark" required>
           <option value="" disabled selected>Choose a remark</option>
           <option value="Customer not available">Customer not available</option>
-          <option value="Customer refused to accept">
-            Customer refused to accept
-          </option>
+          <option value="Customer Reject parcel">Customer refused to accept</option>
           <option value="Cannot locate address">Cannot locate address</option>
         </select>
         <label for="remark">Remark</label>
@@ -196,7 +194,7 @@ Functions:
           target="_blank"
           referrerpolicy="no-referrer"
           class="white-text"
-          >GitHub project © 2024 ArabianCoconut. All rights reserved.</a
+          >[ GitHub project ] © 2024 ArabianCoconut. All rights reserved.</a
         >
       </div>
     </footer>
