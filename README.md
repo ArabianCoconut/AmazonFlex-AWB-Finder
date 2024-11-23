@@ -10,7 +10,7 @@ This project is designed to help track orders for Amazon Flex drivers and record
 ## Roadmap
 
 - ~~Database to be connected.~~
-- Maybe implement a endpoint to fetch all data.
+- Maybe implement a endpoint to fetch all data stored.
 
 ## Getting Started
 
