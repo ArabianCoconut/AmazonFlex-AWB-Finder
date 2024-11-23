@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmazonFlex Order Issues</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+
+        .btn-purple {
+            background-color: #FF9900 !important;
+        }
+        .AmazonFlex-text {
+            color: #FF9900 !important;
+        }
+
+        #qr-reader {
+            margin-top: 20px;
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        #qr-reader .qrbox {
+            border: 4px solid #FF9900;
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h3 class="AmazonFlex-text">AmazonFlex Order Tracker</h3>
+        <div class="input-field">
+            <input id="awb" type="text" class="validate">
+            <label for="awb">AWB</label>
+        </div>
+        <div class="input-field">
+            <input id="date" type="datetime-local" class="validate">
+        </div>
+        <div class="input-field">
+            <select id="remark">
+                <option value="" disabled selected>Choose a remark</option>
+                <option value="Customer not available">Customer not available</option>
+                <option value="Customer refused to accept">Customer refused to accept</option>
+                <option value="Cannot locate address">Cannot locate address</option>
+            </select>
+            <label for="remark">Remark</label>
+        </div>
+        <div>
+            <button class="btn btn-purple" onclick="submit()">Submit</button>
+            <button class="btn btn-purple" onclick="toggleQRScanner()">Scan QR</button>
+        </div>
+        <div id="qr-reader"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        const payload = {
+            awb: "",
+            date: "",
+            remark: ""
+        };
+        // Initialize Materialize select component
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('select');
+            M.FormSelect.init(elems);
+        });
+
+        // Handle form submission
+        function submit() {
+           try {
+             payload.awb = document.getElementById('awb').value;
+           } catch (error) {
+            alert("Please enter AWB number or scan QR code");
+           }
+
+            payload.date = document.getElementById('date').value;
+            payload.remark = document.getElementById('remark').value;
+
+            console.log(awb, date, remark);
+        }
+
+        // Toggle QR Scanner
+        let qrReaderVisible = false;
+
+        function toggleQRScanner() {
+            const qrReaderContainer = document.getElementById("qr-reader");
+            if (qrReaderVisible) {
+                qrReaderContainer.style.display = "none";
+                Html5QrcodeScanner.getInstance().clear();
+            } else {
+                qrReaderContainer.style.display = "block";
+                initializeQRScanner();
+            }
+            qrReaderVisible = !qrReaderVisible;
+        }
+
+        // Initialize QR Code Scanner
+        function initializeQRScanner() {
+            const qrReaderContainer = document.getElementById("qr-reader");
+            const html5QrCode = new Html5Qrcode("qr-reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                },
+                (decodedText, decodedResult) => {
+                    // On successful scan
+                    payload.awb = decodedText;
+                    html5QrCode.stop(); // Stop scanning after success
+                    qrReaderContainer.style.display = "none";
+                    qrReaderVisible = false;
+                },
+                (errorMessage) => {
+                    // On error (optional)
+                    console.log(errorMessage);
+                }
+            ).catch((err) => {
+                console.error("QR Scanner initialization failed:", err);
+            });
+        }
+    </script>
+</body>
+
+</html>
