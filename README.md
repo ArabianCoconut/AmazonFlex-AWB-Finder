@@ -41,3 +41,7 @@ Feel free to submit issues or pull requests. For major changes, please open an i
 ## License
 
 This project is licensed under the MIT License.
+
+## Disclaimer
+
+The AmazonFlex AWB Finder is an independent tool developed to assist drivers in managing AWB numbers and storing for future reference. It is not affiliated with, endorsed by, or officially connected to Amazon.com, Inc., or its subsidiaries. Use of this tool is solely at the user's discretion, and the developers are not responsible for any inaccuracies, delays, or issues arising from its use. Always ensure compliance with Amazon's terms and policies while using third-party tools.
