@@ -214,7 +214,7 @@ Functions:
 
       function submit() {
         const awb = document.getElementById("awb").value;
-        const date = new Date().toLocaleString("en-IN", {
+        const datetime = new Date().toLocaleString("en-IN", {
           timeZone: "Asia/Kolkata",
         });
         const remark = document.getElementById("remark").value;
@@ -224,7 +224,7 @@ Functions:
           headers: {
             "Content-Type": "application/json; charset=UTF-8",
           },
-          body: JSON.stringify({ awb, date, remark }),
+          body: JSON.stringify({ awb, datetime, remark }),
         })
           .then((response) => response.json())
           .then((data) => console.log("Success:", data))

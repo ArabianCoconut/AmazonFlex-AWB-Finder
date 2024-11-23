@@ -31,8 +31,7 @@ func runGin() *gin.Engine {
 	r.POST("/api/submit", func(c *gin.Context) {
 		var json struct {
 			AWB  string `json:"awb" binding:"required"`
-			Date string `json:"date"`
-			Time string `json:"time"`
+			DateTime string `json:"datetime"`
 		}
 
 		if err := c.ShouldBindJSON(&json); err != nil {
