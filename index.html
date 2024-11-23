@@ -20,22 +20,28 @@
             color: #FF9900 !important;
         }
 
-        #qr-reader {
-            margin-top: 20px;
+        #qr-reader-popup {
             display: none;
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        #qr-reader video {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #qr-reader-popup-content {
+            position: relative;
+            width: 80%;
+            max-width: 400px;
+            height: 400px;
+            background-color: #000;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
         .qrbox {
@@ -48,8 +54,20 @@
             border: 4px solid #FF9900;
             background: rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
-            border-radius: 10px; /* Match the outer box corners */
-            z-index: 10;
+            border-radius: 10px;
+        }
+
+        #close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #FF9900;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -75,17 +93,21 @@
         </div>
         <div>
             <button class="btn btn-purple" onclick="submit()">Submit</button>
-            <button class="btn btn-purple" onclick="toggleQRScanner()">Scan QR</button>
+            <button class="btn btn-purple" onclick="openQRScanner()">Scan QR</button>
         </div>
-        <div id="qr-reader">
-            <div class="qrbox"></div>
+
+        <!-- QR Scanner Popup -->
+        <div id="qr-reader-popup" onclick="closeQRScanner(event)">
+            <div id="qr-reader-popup-content" onclick="stopEventPropagation(event)">
+                <button id="close-popup" onclick="closeQRScanner()">×</button>
+                <div id="qr-reader"></div>
+            </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script>
-        let qrReaderVisible = false;
         let html5QrCode = null;
 
         // Initialize Materialize select component
@@ -102,23 +124,9 @@
             console.log({ awb, date, remark });
         }
 
-        function toggleQRScanner() {
-            const qrReaderContainer = document.getElementById("qr-reader");
-
-            if (qrReaderVisible) {
-                qrReaderContainer.style.display = "none";
-                html5QrCode.stop();
-                html5QrCode = null;
-            } else {
-                qrReaderContainer.style.display = "block";
-                initializeQRScanner();
-            }
-
-            qrReaderVisible = !qrReaderVisible;
-        }
-
-        function initializeQRScanner() {
-            const qrReaderContainer = document.getElementById("qr-reader");
+        function openQRScanner() {
+            const qrReaderPopup = document.getElementById("qr-reader-popup");
+            qrReaderPopup.style.display = "flex";
 
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("qr-reader");
@@ -128,12 +136,12 @@
                 { facingMode: "environment" },
                 {
                     fps: 10,
-                    qrbox: { width: 250, height: 200 }, // Match QR box to the visible rectangle
+                    qrbox: { width: 250, height: 250 },
                 },
                 (decodedText) => {
                     document.getElementById('awb').value = decodedText;
                     alert(`Scanned AWB: ${decodedText}`);
-                    toggleQRScanner(); // Stop scanner on success
+                    closeQRScanner(); // Close the popup after scanning
                 },
                 (errorMessage) => {
                     console.log("Scanning error:", errorMessage);
@@ -142,6 +150,28 @@
                 console.error("QR Scanner initialization failed:", err);
                 alert("Error accessing camera: " + err.message);
             });
+        }
+
+        function closeQRScanner(event) {
+            const qrReaderPopup = document.getElementById("qr-reader-popup");
+
+            // Close only if clicking outside the content
+            if (event && event.target !== qrReaderPopup) return;
+
+            qrReaderPopup.style.display = "none";
+
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode = null;
+                }).catch((err) => {
+                    console.error("QR Scanner stop failed:", err);
+                });
+            }
+        }
+
+        // Prevent click events on the content from closing the popup
+        function stopEventPropagation(event) {
+            event.stopPropagation();
         }
     </script>
 </body>
