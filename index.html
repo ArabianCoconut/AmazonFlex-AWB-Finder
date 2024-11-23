@@ -1,3 +1,30 @@
+<!-- 
+
+This HTML file creates a simple web page for tracking AmazonFlex orders. It includes a form for entering an AWB (Air Waybill) number and selecting a remark from a dropdown list. The page also features a QR code scanner for scanning AWB numbers.
+
+Key Features:
+- Materialize CSS framework for styling.
+- Custom styles for buttons and text.
+- Input fields for AWB and remark.
+- Buttons for submitting the form and opening the QR scanner.
+- QR scanner popup with HTML5 QR code library.
+
+Styles:
+- .container: Adds margin to the top of the container.
+- .btn-purple: Custom button style with AmazonFlex color.
+- .AmazonFlex-text: Custom text color for AmazonFlex branding.
+- #qr-reader-popup: Styles for the QR scanner popup overlay.
+- #qr-reader-popup-content: Styles for the QR scanner popup content.
+- .qrbox: Styles for the QR code scanning box.
+- #close-popup: Styles for the close button in the QR scanner popup.
+
+JavaScript:
+- Initializes Materialize select component on DOMContentLoaded.
+- submit(): Collects AWB, date, and remark, and displays them in an alert.
+- openQRScanner(): Opens the QR scanner popup and starts the QR code scanner.
+- closeQRScanner(event): Closes the QR scanner popup and stops the QR code scanner.
+- stopEventPropagation(event): Prevents click events on the popup content from closing the popup.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -80,9 +107,6 @@
             <label for="awb">AWB</label>
         </div>
         <div class="input-field">
-            <input id="date" type="datetime-local" class="validate">
-        </div>
-        <div class="input-field">
             <select id="remark">
                 <option value="" disabled selected>Choose a remark</option>
                 <option value="Customer not available">Customer not available</option>
@@ -118,10 +142,10 @@
 
         function submit() {
             const awb = document.getElementById('awb').value;
-            const date = document.getElementById('date').value;
+            const date = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
             const remark = document.getElementById('remark').value;
 
-            console.log({ awb, date, remark });
+            alert(`AWB: ${awb}\nDate: ${date}\nRemark: ${remark}`);
         }
 
         function openQRScanner() {
