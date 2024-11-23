@@ -17,7 +17,7 @@ func main() {
 		log.Println("Environment variables loaded successfully")
 	}
 
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 	r := runGin()
 	r.Run(":8080")
 
