@@ -1,203 +1,281 @@
 <!-- 
 
-This HTML file creates a simple web page for tracking AmazonFlex orders. It includes a form for entering an AWB (Air Waybill) number and selecting a remark from a dropdown list. The page also features a QR code scanner for scanning AWB numbers.
+This HTML file represents the main page for the AmazonFlex Order Tracker web application. 
+It includes the following key sections and functionalities:
 
-Key Features:
-- Materialize CSS framework for styling.
-- Custom styles for buttons and text.
-- Input fields for AWB and remark.
-- Buttons for submitting the form and opening the QR scanner.
-- QR scanner popup with HTML5 QR code library.
+1. Meta Information:
+    - Sets the character encoding to UTF-8.
+    - Sets the viewport for responsive design.
+    - Defines the title of the page as "AmazonFlex Order Issues".
+    - Links to external stylesheets for Material Icons and Materialize CSS.
+    - Links to a favicon.
 
-Styles:
-- .container: Adds margin to the top of the container.
-- .btn-purple: Custom button style with AmazonFlex color.
-- .AmazonFlex-text: Custom text color for AmazonFlex branding.
-- #qr-reader-popup: Styles for the QR scanner popup overlay.
-- #qr-reader-popup-content: Styles for the QR scanner popup content.
-- .qrbox: Styles for the QR code scanning box.
-- #close-popup: Styles for the close button in the QR scanner popup.
+2. Custom Styles:
+    - Defines custom styles for various elements including container, buttons, text, logo, and QR reader popup.
 
-JavaScript:
-- Initializes Materialize select component on DOMContentLoaded.
-- submit(): Collects AWB, date, and remark, and displays them in an alert.
-- openQRScanner(): Opens the QR scanner popup and starts the QR code scanner.
+3. Body Content:
+    - A container that holds the main content of the page.
+    - A logo and text container displaying the AmazonFlex logo and title.
+    - Input fields for AWB (Air Waybill) and remark selection.
+    - Buttons for submitting the form and opening the QR scanner.
+
+4. QR Scanner Popup:
+    - A hidden popup for QR code scanning, which includes a close button and a div for the QR reader.
+
+5. Footer:
+    - A footer with a disclaimer about the application's connection to Amazon and a link to the GitHub project.
+
+6. Scripts:
+    - Includes external scripts for Materialize JS and HTML5 QR code scanning.
+    - Initializes the Materialize select component.
+    - Defines functions for form submission, opening and closing the QR scanner, and preventing event propagation.
+
+Functions:
+- submit(): Collects the AWB, current date, and selected remark, then displays them in an alert.
+- openQRScanner(): Opens the QR scanner popup and initializes the QR code scanner.
 - closeQRScanner(event): Closes the QR scanner popup and stops the QR code scanner.
-- stopEventPropagation(event): Prevents click events on the popup content from closing the popup.
+- stopEventPropagation(event): Prevents click events on the QR reader content from closing the popup.
 -->
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AmazonFlex Order Issues</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <style>
-        .container {
-            margin-top: 50px;
-        }
+      .container {
+        margin-top: 50px;
+      }
 
-        .btn-purple {
-            background-color: #FF9900 !important;
-        }
+      .btn-purple {
+        background-color: #ff9900 !important;
+      }
 
-        .AmazonFlex-text {
-            color: #FF9900 !important;
-        }
+      .AmazonFlex-text {
+        color: #ff9900 !important;
+      }
 
-        #qr-reader-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
+      .logo-text-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        /* Space between logo and text */
+        margin-bottom: 20px;
+      }
 
-        #qr-reader-popup-content {
-            position: relative;
-            width: 80%;
-            max-width: 400px;
-            height: 400px;
-            background-color: #000;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
+      .logo-text-container img {
+        max-height: 50px;
+        /* Adjust size of the logo */
+      }
 
-        .qrbox {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 80%;
-            height: 80%;
-            transform: translate(-50%, -50%);
-            border: 4px solid #FF9900;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
-            border-radius: 10px;
-        }
+      #qr-reader-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
 
-        #close-popup {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #FF9900;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-        }
+      #qr-reader-popup-content {
+        position: relative;
+        width: 80%;
+        max-width: 400px;
+        height: 400px;
+        background-color: #000;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .qrbox {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 80%;
+        height: 80%;
+        transform: translate(-50%, -50%);
+        border: 4px solid #ff9900;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
+        border-radius: 10px;
+      }
+
+      #close-popup {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff9900;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="container">
+      <!-- Logo and Text Container -->
+      <div class="logo-text-container">
+        <img src="assets/flexlogo.png" alt="AmazonFlex Logo" />
         <h3 class="AmazonFlex-text">AmazonFlex Order Tracker</h3>
-        <div class="input-field">
-            <input id="awb" type="text" class="validate">
-            <label for="awb">AWB</label>
-        </div>
-        <div class="input-field">
-            <select id="remark">
-                <option value="" disabled selected>Choose a remark</option>
-                <option value="Customer not available">Customer not available</option>
-                <option value="Customer refused to accept">Customer refused to accept</option>
-                <option value="Cannot locate address">Cannot locate address</option>
-            </select>
-            <label for="remark">Remark</label>
-        </div>
-        <div>
-            <button class="btn btn-purple" onclick="submit()">Submit</button>
-            <button class="btn btn-purple" onclick="openQRScanner()">Scan QR</button>
-        </div>
+      </div>
 
-        <!-- QR Scanner Popup -->
-        <div id="qr-reader-popup" onclick="closeQRScanner(event)">
-            <div id="qr-reader-popup-content" onclick="stopEventPropagation(event)">
-                <button id="close-popup" onclick="closeQRScanner()">×</button>
-                <div id="qr-reader"></div>
-            </div>
+      <div class="input-field">
+        <input id="awb" type="text" class="validate" />
+        <label for="awb">AWB</label>
+      </div>
+      <div class="input-field">
+        <select id="remark">
+          <option value="" disabled selected>Choose a remark</option>
+          <option value="Customer not available">Customer not available</option>
+          <option value="Customer refused to accept">
+            Customer refused to accept
+          </option>
+          <option value="Cannot locate address">Cannot locate address</option>
+        </select>
+        <label for="remark">Remark</label>
+      </div>
+      <div>
+        <button class="btn btn-purple" onclick="submit()">Submit</button>
+        <button class="btn btn-purple" onclick="openQRScanner()">
+          Scan QR
+        </button>
+      </div>
+
+      <!-- QR Scanner Popup -->
+      <div id="qr-reader-popup" onclick="closeQRScanner(event)">
+        <div id="qr-reader-popup-content" onclick="stopEventPropagation(event)">
+          <button id="close-popup" onclick="closeQRScanner()">×</button>
+          <div id="qr-reader"></div>
         </div>
+      </div>
     </div>
+    <footer
+      class="page-footer"
+      style="
+        padding: 10px 0;
+        margin-top: 20px;
+        background-color: #ff9900;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      "
+    >
+      <p class="white-text" style="margin: 5px 0; text-align: center">
+        This Web application is in no way connected with Amazon.com or
+        AmazonFlex. Any use is the sole responsibility of the user.
+      </p>
+      <div
+        class="container center-align"
+        style="
+          font-weight: bolder;
+          font-size: 0.8rem;
+          margin-top: 5px;
+          text-align: center;
+        "
+      >
+        <a
+          href="https://github.com/ArabianCoconut/AmazonFlex-OrderTracker"
+          target="_blank"
+          referrerpolicy="no-referrer"
+          class="white-text"
+          >GitHub project © 2024 ArabianCoconut. All rights reserved.</a
+        >
+      </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script>
-        let html5QrCode = null;
+      let html5QrCode = null;
 
-        // Initialize Materialize select component
-        document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('select');
-            M.FormSelect.init(elems);
+      // Initialize Materialize select component
+      document.addEventListener("DOMContentLoaded", function () {
+        var elems = document.querySelectorAll("select");
+        M.FormSelect.init(elems);
+      });
+
+      function submit() {
+        const awb = document.getElementById("awb").value;
+        const date = new Date().toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
         });
+        const remark = document.getElementById("remark").value;
 
-        function submit() {
-            const awb = document.getElementById('awb').value;
-            const date = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-            const remark = document.getElementById('remark').value;
+        alert(`AWB: ${awb}\nDate: ${date}\nRemark: ${remark}`);
+      }
 
-            alert(`AWB: ${awb}\nDate: ${date}\nRemark: ${remark}`);
+      function openQRScanner() {
+        const qrReaderPopup = document.getElementById("qr-reader-popup");
+        qrReaderPopup.style.display = "flex";
+
+        if (!html5QrCode) {
+          html5QrCode = new Html5Qrcode("qr-reader");
         }
 
-        function openQRScanner() {
-            const qrReaderPopup = document.getElementById("qr-reader-popup");
-            qrReaderPopup.style.display = "flex";
-
-            if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode
+          .start(
+            { facingMode: "environment" },
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+            },
+            (decodedText) => {
+              document.getElementById("awb").value = decodedText;
+              alert(`Scanned AWB: ${decodedText}`);
+              closeQRScanner(); // Close the popup after scanning
+            },
+            (errorMessage) => {
+              console.log("Scanning error:", errorMessage);
             }
+          )
+          .catch((err) => {
+            console.error("QR Scanner initialization failed:", err);
+            alert("Error accessing camera: " + err.message);
+          });
+      }
 
-            html5QrCode.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                },
-                (decodedText) => {
-                    document.getElementById('awb').value = decodedText;
-                    alert(`Scanned AWB: ${decodedText}`);
-                    closeQRScanner(); // Close the popup after scanning
-                },
-                (errorMessage) => {
-                    console.log("Scanning error:", errorMessage);
-                }
-            ).catch((err) => {
-                console.error("QR Scanner initialization failed:", err);
-                alert("Error accessing camera: " + err.message);
+      function closeQRScanner(event) {
+        const qrReaderPopup = document.getElementById("qr-reader-popup");
+
+        // Close only if clicking outside the content
+        if (event && event.target !== qrReaderPopup) return;
+
+        qrReaderPopup.style.display = "none";
+
+        if (html5QrCode) {
+          html5QrCode
+            .stop()
+            .then(() => {
+              html5QrCode = null;
+            })
+            .catch((err) => {
+              console.error("QR Scanner stop failed:", err);
             });
         }
+      }
 
-        function closeQRScanner(event) {
-            const qrReaderPopup = document.getElementById("qr-reader-popup");
-
-            // Close only if clicking outside the content
-            if (event && event.target !== qrReaderPopup) return;
-
-            qrReaderPopup.style.display = "none";
-
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode = null;
-                }).catch((err) => {
-                    console.error("QR Scanner stop failed:", err);
-                });
-            }
-        }
-
-        // Prevent click events on the content from closing the popup
-        function stopEventPropagation(event) {
-            event.stopPropagation();
-        }
+      // Prevent click events on the content from closing the popup
+      function stopEventPropagation(event) {
+        event.stopPropagation();
+      }
     </script>
-</body>
-
+  </body>
 </html>

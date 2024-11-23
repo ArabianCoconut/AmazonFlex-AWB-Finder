@@ -9,7 +9,8 @@ import "github.com/gin-gonic/gin"
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	r.StaticFile("/index.html", "./index.html")
+	r.Static("/assets", "./assets")
+	r.StaticFile("/favicon.ico", "./favicon.ico")
 	r.GET("/", func(c *gin.Context) {
 		c.File("./index.html")
 	})
