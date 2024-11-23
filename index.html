@@ -15,6 +15,7 @@
         .btn-purple {
             background-color: #FF9900 !important;
         }
+
         .AmazonFlex-text {
             color: #FF9900 !important;
         }
@@ -31,7 +32,6 @@
             border: 4px solid #FF9900;
             box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
         }
-        
     </style>
 </head>
 
@@ -69,6 +69,7 @@
             date: "",
             remark: ""
         };
+
         // Initialize Materialize select component
         document.addEventListener('DOMContentLoaded', function () {
             var elems = document.querySelectorAll('select');
@@ -77,53 +78,67 @@
 
         // Handle form submission
         function submit() {
-           try {
-             payload.awb = document.getElementById('awb').value;
-           } catch (error) {
-            alert("Please enter AWB number or scan QR code");
-           }
-
+            payload.awb = document.getElementById('awb').value || payload.awb; // Use QR value if input is empty
             payload.date = document.getElementById('date').value;
             payload.remark = document.getElementById('remark').value;
 
-            console.log(awb, date, remark);
+            if (!payload.awb) {
+                alert("Please enter AWB number or scan QR code");
+                return;
+            }
+
+            if (!payload.date || !payload.remark) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            console.log("Submission Data:", payload);
+            alert("Data submitted successfully!");
         }
 
         // Toggle QR Scanner
         let qrReaderVisible = false;
+        let html5QrCode;
 
         function toggleQRScanner() {
             const qrReaderContainer = document.getElementById("qr-reader");
+
             if (qrReaderVisible) {
                 qrReaderContainer.style.display = "none";
-                Html5QrcodeScanner.getInstance().clear();
+                if (html5QrCode) {
+                    html5QrCode.stop().catch(console.error);
+                }
             } else {
                 qrReaderContainer.style.display = "block";
                 initializeQRScanner();
             }
+
             qrReaderVisible = !qrReaderVisible;
         }
 
         // Initialize QR Code Scanner
         function initializeQRScanner() {
             const qrReaderContainer = document.getElementById("qr-reader");
-            const html5QrCode = new Html5Qrcode("qr-reader");
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+
             html5QrCode.start(
                 { facingMode: "environment" },
                 {
                     fps: 10,
-                    qrbox: { width: 250, height: 250 },
+                    qrbox: { width: 250, height: 150 }, // Rectangular QR box
                 },
-                (decodedText, decodedResult) => {
+                (decodedText) => {
                     // On successful scan
                     payload.awb = decodedText;
-                    html5QrCode.stop(); // Stop scanning after success
-                    qrReaderContainer.style.display = "none";
-                    qrReaderVisible = false;
+                    alert(`Scanned AWB: ${decodedText}`);
+                    document.getElementById('awb').value = decodedText; // Autofill AWB field
+                    toggleQRScanner(); // Stop scanning and hide scanner
                 },
                 (errorMessage) => {
-                    // On error (optional)
-                    console.log(errorMessage);
+                    console.log("Scanning error:", errorMessage); // Optional error logging
                 }
             ).catch((err) => {
                 console.error("QR Scanner initialization failed:", err);
