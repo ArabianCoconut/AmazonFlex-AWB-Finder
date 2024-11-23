@@ -145,7 +145,9 @@ Functions:
         <select id="remark" required>
           <option value="" disabled selected>Choose a remark</option>
           <option value="Customer not available">Customer not available</option>
-          <option value="Customer Reject parcel">Customer refused to accept</option>
+          <option value="Customer Reject parcel">
+            Customer refused to accept
+          </option>
           <option value="Cannot locate address">Cannot locate address</option>
         </select>
         <label for="remark">Remark</label>
@@ -217,7 +219,16 @@ Functions:
         });
         const remark = document.getElementById("remark").value;
 
-        alert(`AWB: ${awb}\nDate: ${date}\nRemark: ${remark}`);
+        fetch("/api/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+          },
+          body: JSON.stringify({ awb, date, remark }),
+        })
+          .then((response) => response.json())
+          .then((data) => console.log("Success:", data))
+          .catch((error) => console.error("Error:", error));
       }
 
       function openQRScanner() {
