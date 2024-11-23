@@ -6,5 +6,6 @@ WORKDIR /app
 EXPOSE 8080
 ENV PORT=8080
 RUN go mod tidy
+RUN go build -o main .
 
-CMD ["go", "run", "main.go"]
+CMD [ "./main" ]
