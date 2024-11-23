@@ -29,3 +29,5 @@ go.work
 # Build directories
 bin/
 build/
+compose.yaml
+local.env
