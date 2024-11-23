@@ -26,11 +26,30 @@
             position: relative;
             width: 100%;
             height: 300px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        #qr-reader .qrbox {
+        #qr-reader video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .qrbox {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            height: 80%;
+            transform: translate(-50%, -50%);
             border: 4px solid #FF9900;
+            background: rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
+            border-radius: 10px; /* Match the outer box corners */
+            z-index: 10;
         }
     </style>
 </head>
@@ -58,17 +77,16 @@
             <button class="btn btn-purple" onclick="submit()">Submit</button>
             <button class="btn btn-purple" onclick="toggleQRScanner()">Scan QR</button>
         </div>
-        <div id="qr-reader"></div>
+        <div id="qr-reader">
+            <div class="qrbox"></div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script>
-        const payload = {
-            awb: "",
-            date: "",
-            remark: ""
-        };
+        let qrReaderVisible = false;
+        let html5QrCode = null;
 
         // Initialize Materialize select component
         document.addEventListener('DOMContentLoaded', function () {
@@ -76,38 +94,21 @@
             M.FormSelect.init(elems);
         });
 
-        // Handle form submission
         function submit() {
-            payload.awb = document.getElementById('awb').value || payload.awb; // Use QR value if input is empty
-            payload.date = document.getElementById('date').value;
-            payload.remark = document.getElementById('remark').value;
+            const awb = document.getElementById('awb').value;
+            const date = document.getElementById('date').value;
+            const remark = document.getElementById('remark').value;
 
-            if (!payload.awb) {
-                alert("Please enter AWB number or scan QR code");
-                return;
-            }
-
-            if (!payload.date || !payload.remark) {
-                alert("Please fill all fields");
-                return;
-            }
-
-            console.log("Submission Data:", payload);
-            alert("Data submitted successfully!");
+            console.log({ awb, date, remark });
         }
-
-        // Toggle QR Scanner
-        let qrReaderVisible = false;
-        let html5QrCode;
 
         function toggleQRScanner() {
             const qrReaderContainer = document.getElementById("qr-reader");
 
             if (qrReaderVisible) {
                 qrReaderContainer.style.display = "none";
-                if (html5QrCode) {
-                    html5QrCode.stop().catch(console.error);
-                }
+                html5QrCode.stop();
+                html5QrCode = null;
             } else {
                 qrReaderContainer.style.display = "block";
                 initializeQRScanner();
@@ -116,7 +117,6 @@
             qrReaderVisible = !qrReaderVisible;
         }
 
-        // Initialize QR Code Scanner
         function initializeQRScanner() {
             const qrReaderContainer = document.getElementById("qr-reader");
 
@@ -128,20 +128,19 @@
                 { facingMode: "environment" },
                 {
                     fps: 10,
-                    qrbox: { width: 250, height: 150 }, // Rectangular QR box
+                    qrbox: { width: 250, height: 200 }, // Match QR box to the visible rectangle
                 },
                 (decodedText) => {
-                    // On successful scan
-                    payload.awb = decodedText;
+                    document.getElementById('awb').value = decodedText;
                     alert(`Scanned AWB: ${decodedText}`);
-                    document.getElementById('awb').value = decodedText; // Autofill AWB field
-                    toggleQRScanner(); // Stop scanning and hide scanner
+                    toggleQRScanner(); // Stop scanner on success
                 },
                 (errorMessage) => {
-                    console.log("Scanning error:", errorMessage); // Optional error logging
+                    console.log("Scanning error:", errorMessage);
                 }
             ).catch((err) => {
                 console.error("QR Scanner initialization failed:", err);
+                alert("Error accessing camera: " + err.message);
             });
         }
     </script>
