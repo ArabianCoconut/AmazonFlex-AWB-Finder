@@ -9,7 +9,7 @@ This project is designed to help track orders for Amazon Flex drivers and record
 
 ## Roadmap
 
-- Database to be connected.
+- ~~Database to be connected.~~
 
 ## Getting Started
 
