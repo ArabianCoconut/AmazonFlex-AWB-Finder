@@ -19,16 +19,16 @@ func main() {
 // validates the payload, and responds with a success message and the received data.
 
 func runGin() *gin.Engine {
-	r := gin.Default()
-	r.Static("/assets", "./assets")
-	r.StaticFile("/favicon.ico", "./favicon.ico")
-	r.GET("/", func(c *gin.Context) {
+	router := gin.Default()
+	router.Static("/assets", "./assets")
+	router.StaticFile("/favicon.ico", "./favicon.ico")
+	router.GET("/", func(c *gin.Context) {
 		c.File("./index.html")
 	})
 
 	// POST route to submit data is Working fine connected with the frontend
 	// Database connection is not implemented
-	r.POST("/api/submit", func(c *gin.Context) {
+	router.POST("/api/submit", func(c *gin.Context) {
 		var json struct {
 			AWB  string `json:"awb" binding:"required"`
 			DateTime string `json:"datetime"`
@@ -45,5 +45,5 @@ func runGin() *gin.Engine {
 		})
 	})
 
-	return r
+	return router
 }
