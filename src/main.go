@@ -57,11 +57,11 @@ func runGin() *gin.Engine {
 			"data":    json,
 		})
 		// Connect to the database and upload the data
-		database.ConnectandUpload(json.AWB, json.DateTime, json.Remark)
+		database.ConnectAndUpload(json.AWB, json.DateTime, json.Remark)
 	})
 
 	router.GET("/api/fetch", func(c *gin.Context) {
-		data := database.ConnectandFetch()
+		data := database.ConnectAndFetch()
 		if data == nil {
 			c.JSON(400, gin.H{"error": "Error fetching data"})
 			return
@@ -84,7 +84,8 @@ func runGin() *gin.Engine {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		database.ConnectandDelete(json.AWB)
+		c.JSON(200, gin.H{"message": json.AWB + " deleted successfully"})
+		database.ConnectAndDelete(json.AWB)
 		
 	})
 

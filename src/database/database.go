@@ -29,7 +29,7 @@ import (
 //   - Logs a success message if the document is inserted successfully.
 
 
-func ConnectandUpload(awb string, datetime string, remark string) {
+func ConnectAndUpload(awb string, datetime string, remark string) {
 	var mongoConfig struct {
 		Database     string
 		DB_COLLECTION string
@@ -56,7 +56,7 @@ func ConnectandUpload(awb string, datetime string, remark string) {
 	}
 }
 
-func ConnectandFetch() []bson.M {
+func ConnectAndFetch() []bson.M {
 	var mongoConfig struct {
 		Database     string
 		DB_COLLECTION string
@@ -82,22 +82,43 @@ func ConnectandFetch() []bson.M {
 	return results
 }
 
-func ConnectandDelete(awb string) {
+func ConnectAndDelete(awb string) {
 	var mongoConfig struct {
-		Database     string
+		Database      string
 		DB_COLLECTION string
 	}
 
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
-		log.Println(err)
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			log.Fatalf("Failed to disconnect from MongoDB: %v", err)
+		}
+	}()
+
 	collection := client.Database(mongoConfig.Database).Collection(mongoConfig.DB_COLLECTION)
-	_, err = collection.DeleteOne(context.Background(), bson.D{{Key: "awb", Value: awb}})
-	if err != nil {
-		log.Println(err)
-	} else {
-		log.Println(awb + " deleted successfully")
+
+	// Use FindOneAndDelete to delete a document and return the deleted one
+	result := collection.FindOneAndDelete(context.Background(), bson.D{{Key: "awb", Value: awb}})
+	if err := result.Err(); err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Printf("No record found for AWB: %s", awb)
+		} else {
+			log.Printf("Error occurred while deleting AWB %s: %v", awb, err)
+		}
+		return
 	}
+
+	// Optional: Decode the deleted document if needed
+	var deletedDoc bson.M
+	if err := result.Decode(&deletedDoc); err != nil {
+		log.Printf("Failed to decode deleted document for AWB %s: %v", awb, err)
+	} else {
+		log.Printf("Deleted document: %v", deletedDoc)
+	}
+
+	log.Printf("AWB %s deleted successfully", awb)
 }

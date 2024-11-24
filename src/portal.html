@@ -1,7 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AmazonFlex AWB Portal</title>
+  <!-- Materialize CSS for Material UI Styling -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    h4 {
+      color: #ff9900; /* AmazonFlex color */
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      flex-grow: 1;
+    }
+
+    .card {
+      flex: 1 1 calc(33% - 20px); /* 3 cards per row */
+      max-width: calc(33% - 20px);
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      border-left: 7px solid #ff9900; /* AmazonFlex color */
+    }
+
+    .back-button {
+      background-color: #ff9900; /* AmazonFlex color */
+      color: white;
+      margin-top: 20px;
+      align-self: center;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        flex: 1 1 calc(50% - 20px); /* 2 cards per row */
+        max-width: calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        flex: 1 1 100%; /* 1 card per row */
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="root">
+  <h4>AmazonFlex AWB Record</h4>
+
+  <!-- Search Container -->
+  <div class="search-container">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search by AWB, Datetime, or Remark"
+      class="input-field"
+    />
+  </div>
+
+  <!-- Card Container -->
+  <div class="card-container" id="cardContainer">
+    <!-- Cards will be dynamically populated here -->
+  </div>
+
+  <!-- Back to Home Button -->
+  <button class="btn back-button" onclick="goHome()">Back to Home</button>
+</div>
+
 <script>
   const API_URL = '/api/fetch'; // Replace with your real API endpoint
   const DELETE_URL = '/api/delete'; // Replace with your delete API endpoint
   let fetchedData = []; // To store the fetched data globally for searching
+
+  // Escape HTML to prevent XSS
+  const escapeHTML = (str) => str.replace(/[&<>"']/g, (match) => {
+    const escapeChars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return escapeChars[match];
+  });
 
   // Function to render cards dynamically
   const renderCards = (data) => {
@@ -17,14 +110,18 @@
       const card = document.createElement('div');
       card.className = 'card';
 
+      const awb = escapeHTML(item.awb);
+      const datetime = escapeHTML(item.datetime);
+      const remark = item.remark ? escapeHTML(item.remark) : 'No remarks';
+
       card.innerHTML = `
         <div class="card-content">
-          <span class="card-title">AWB: ${item.awb}</span>
-          <p><strong>Datetime:</strong> ${item.datetime}</p>
-          <p><strong>Remark:</strong> ${item.remark ? item.remark : 'No remarks'}</p>
+          <span class="card-title">AWB: ${awb}</span>
+          <p><strong>Datetime:</strong> ${datetime}</p>
+          <p><strong>Remark:</strong> ${remark}</p>
         </div>
         <div class="card-action">
-          <button class="btn red" onclick="deleteRecord('${item._id}')">Delete</button>
+          <button class="btn red" onclick="deleteRecord('${item.awb || ''}')">Delete</button>
         </div>
       `;
 
@@ -41,8 +138,10 @@
       }
       const result = await response.json();
 
+      if (!result.data) throw new Error('No data received from the API');
+
       // Sort data by the latest entry based on `_id`
-      fetchedData = result.data.sort((a, b) => b._id.localeCompare(a._id));
+      fetchedData = result.data.sort((a, b) => (b._id || '').localeCompare(a._id || ''));
 
       renderCards(fetchedData);
     } catch (error) {
@@ -53,29 +152,35 @@
   };
 
   // Delete record function
-  const deleteRecord = async (id) => {
-    if (!confirm('Are you sure you want to delete this record?')) return;
+  const deleteRecord = async (awb) => {
+  if (!awb) {
+    alert('Invalid AWB number');
+    return;
+  }
 
-    try {
-      const response = await fetch(DELETE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id }),
-      });
+  if (!confirm(`Are you sure you want to delete the record with AWB: ${awb}?`)) return;
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      alert('Record deleted successfully.');
-      fetchData(); // Reload data after deletion
-    } catch (error) {
-      console.error('Error deleting record:', error);
-      alert('Failed to delete the record. Please try again.');
+  try {
+    const response = await fetch(DELETE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ awb }), // Pass AWB as payload
+    });
+    console.log(awb);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
-  };
+
+    alert(`Record with AWB: ${awb} deleted successfully.`);
+    fetchData(); // Reload data after deletion
+  } catch (error) {
+    console.error('Error deleting record:', error);
+    alert('Failed to delete the record. Please try again.');
+  }
+};
+
 
   // Search functionality
   const handleSearch = (event) => {
@@ -94,9 +199,18 @@
     window.location.href = '/';
   };
 
-  // Attach event listener to the search input
-  document.getElementById('searchInput').addEventListener('input', handleSearch);
+  // Event listener for search input
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', handleSearch);
+    } else {
+      console.warn('Search input not found.');
+    }
 
-  // Load data on page load
-  fetchData();
+    // Load data on page load
+    fetchData();
+  });
 </script>
+</body>
+</html>
