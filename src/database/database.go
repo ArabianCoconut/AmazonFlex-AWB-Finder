@@ -87,6 +87,8 @@ func ConnectAndDelete(awb string) {
 		Database      string
 		DB_COLLECTION string
 	}
+	mongoConfig.Database = os.Getenv("DB_NAME")
+	mongoConfig.DB_COLLECTION = os.Getenv("DB_COLLECTION")
 
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
