@@ -30,20 +30,13 @@ import (
 
 
 func ConnectAndUpload(awb string, datetime string, remark string) {
-	var mongoConfig struct {
-		Database     string
-		DB_COLLECTION string
-	}
-
-	mongoConfig.Database = os.Getenv("DB_NAME")
-	mongoConfig.DB_COLLECTION = os.Getenv("DB_COLLECTION")
 	
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Println(err)
 	}
-	collection := client.Database(mongoConfig.Database).Collection(mongoConfig.DB_COLLECTION)
+	collection := client.Database(os.Getenv("DB_NAME")).Collection(os.Getenv("DB_COLLECTION"))
 	_, err = collection.InsertOne(context.Background(), bson.D{
 		{Key: "awb", Value: awb},
 		{Key: "datetime", Value: datetime},
@@ -57,20 +50,13 @@ func ConnectAndUpload(awb string, datetime string, remark string) {
 }
 
 func ConnectAndFetch() []bson.M {
-	var mongoConfig struct {
-		Database     string
-		DB_COLLECTION string
-	}
 
-	mongoConfig.Database = os.Getenv("DB_NAME")
-	mongoConfig.DB_COLLECTION = os.Getenv("DB_COLLECTION")
-	
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Println(err)
 	}
-	collection := client.Database(mongoConfig.Database).Collection(mongoConfig.DB_COLLECTION)
+	collection := client.Database(os.Getenv("DB_NAME")).Collection(os.Getenv("DB_COLLECTION"))
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		log.Println(err)
@@ -83,13 +69,6 @@ func ConnectAndFetch() []bson.M {
 }
 
 func ConnectAndDelete(awb string) {
-	var mongoConfig struct {
-		Database      string
-		DB_COLLECTION string
-	}
-	mongoConfig.Database = os.Getenv("DB_NAME")
-	mongoConfig.DB_COLLECTION = os.Getenv("DB_COLLECTION")
-
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -101,7 +80,7 @@ func ConnectAndDelete(awb string) {
 		}
 	}()
 
-	collection := client.Database(mongoConfig.Database).Collection(mongoConfig.DB_COLLECTION)
+	collection := client.Database(os.Getenv("DB_NAME")).Collection(os.Getenv("DB_COLLECTION"))
 
 	// Use FindOneAndDelete to delete a document and return the deleted one
 	result := collection.FindOneAndDelete(context.Background(), bson.D{{Key: "awb", Value: awb}})
