@@ -75,5 +75,18 @@ func runGin() *gin.Engine {
 		c.File("./portal.html")
 	})
 
+	router.POST("/api/delete", func(c *gin.Context) {
+		var json struct {
+			AWB string `json:"awb" binding:"required"`
+		}
+
+		if err := c.ShouldBindJSON(&json); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		database.ConnectandDelete(json.AWB)
+		
+	})
+
 	return router
 }

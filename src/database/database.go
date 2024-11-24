@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,6 +27,8 @@ import (
 //   - Logs an error if the connection to the database fails.
 //   - Logs an error if the document insertion fails.
 //   - Logs a success message if the document is inserted successfully.
+
+
 func ConnectandUpload(awb string, datetime string, remark string) {
 	var mongoConfig struct {
 		Database     string
@@ -77,4 +80,24 @@ func ConnectandFetch() []bson.M {
 		log.Println(err)
 	}
 	return results
+}
+
+func ConnectandDelete(awb string) {
+	var mongoConfig struct {
+		Database     string
+		DB_COLLECTION string
+	}
+
+	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Println(err)
+	}
+	collection := client.Database(mongoConfig.Database).Collection(mongoConfig.DB_COLLECTION)
+	_, err = collection.DeleteOne(context.Background(), bson.D{{Key: "awb", Value: awb}})
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println(awb + " deleted successfully")
+	}
 }
