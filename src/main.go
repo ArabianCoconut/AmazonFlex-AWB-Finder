@@ -60,5 +60,20 @@ func runGin() *gin.Engine {
 		database.ConnectandUpload(json.AWB, json.DateTime, json.Remark)
 	})
 
+	router.GET("/api/fetch", func(c *gin.Context) {
+		data := database.ConnectandFetch()
+		if data == nil {
+			c.JSON(400, gin.H{"error": "Error fetching data"})
+			return
+		}
+		c.JSON(200, gin.H{
+			"data": data,
+		})
+	})
+
+	router.GET("/portal", func(c *gin.Context) {
+		c.File("./portal.html")
+	})
+
 	return router
 }

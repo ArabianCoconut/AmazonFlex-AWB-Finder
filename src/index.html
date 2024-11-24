@@ -56,7 +56,7 @@ Functions:
         margin-top: 50px;
       }
 
-      .btn-purple {
+      .btn-amazonflex {
         background-color: #ff9900 !important;
       }
 
@@ -153,10 +153,11 @@ Functions:
         <label for="remark">Remark</label>
       </div>
       <div>
-        <button class="btn btn-purple" onclick="submit()">Submit</button>
-        <button class="btn btn-purple" onclick="openQRScanner()">
+        <button class="btn btn-amazonflex" onclick="submit()">Submit</button>
+        <button class="btn btn-amazonflex" onclick="openQRScanner()">
           Scan QR
         </button>
+        <button class="btn btn-amazonflex" onclick="window.location.href = '/portal'">Portal</button>
       </div>
 
       <!-- QR Scanner Popup -->
@@ -166,6 +167,7 @@ Functions:
           <div id="qr-reader"></div>
         </div>
       </div>
+
     </div>
     <footer
       class="page-footer"

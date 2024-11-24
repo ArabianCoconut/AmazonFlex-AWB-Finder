@@ -10,7 +10,7 @@ The AmazonFlex AWB Finder is a tool or application designed to assist Amazon Fle
 ## Roadmap
 
 - ~~Database to be connected.~~
-- Maybe implement a endpoint to fetch all data stored.
+- ~~- Maybe implement a endpoint to fetch all data stored.~~
 
 ## Getting Started
 

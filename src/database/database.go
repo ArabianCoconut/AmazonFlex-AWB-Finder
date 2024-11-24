@@ -30,13 +30,10 @@ func ConnectandUpload(awb string, datetime string, remark string) {
 	var mongoConfig struct {
 		Database     string
 		DB_COLLECTION string
-		DB_LOGIN      string
 	}
 
 	mongoConfig.Database = os.Getenv("DB_NAME")
 	mongoConfig.DB_COLLECTION = os.Getenv("DB_COLLECTION")
-	// mongoConfig.DB_LOGIN = os.Getenv("DB_LOGIN")
-
 	
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
@@ -54,4 +51,30 @@ func ConnectandUpload(awb string, datetime string, remark string) {
 	} else {
 		log.Println("Document inserted successfully")
 	}
+}
+
+func ConnectandFetch() []bson.M {
+	var mongoConfig struct {
+		Database     string
+		DB_COLLECTION string
+	}
+
+	mongoConfig.Database = os.Getenv("DB_NAME")
+	mongoConfig.DB_COLLECTION = os.Getenv("DB_COLLECTION")
+	
+	clientOptions := options.Client().ApplyURI(os.Getenv("DB_LOGIN"))
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Println(err)
+	}
+	collection := client.Database(mongoConfig.Database).Collection(mongoConfig.DB_COLLECTION)
+	cursor, err := collection.Find(context.Background(), bson.D{})
+	if err != nil {
+		log.Println(err)
+	}
+	var results []bson.M
+	if err = cursor.All(context.Background(), &results); err != nil {
+		log.Println(err)
+	}
+	return results
 }

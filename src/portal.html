@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material-UI Cards with Fetch and Search</title>
+  <!-- Materialize CSS for Material UI Styling -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    h4 {
+      color: #ff9900; /* AmazonFlex color */
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      flex-grow: 1;
+    }
+
+    .card {
+      flex: 1 1 calc(33% - 20px); /* 3 cards per row */
+      max-width: calc(33% - 20px);
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      border-left: 7px solid #ff9900; /* AmazonFlex color */
+    }
+
+    .back-button {
+      background-color: #ff9900; /* AmazonFlex color */
+      color: white;
+      margin-top: 20px;
+      align-self: center;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        flex: 1 1 calc(50% - 20px); /* 2 cards per row */
+        max-width: calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        flex: 1 1 100%; /* 1 card per row */
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="root">
+  <h4>AmazonFlex AWB Record</h4>
+
+  <!-- Search Container -->
+  <div class="search-container">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search by AWB, Datetime, or Remark"
+      class="input-field"
+    />
+  </div>
+
+  <!-- Card Container -->
+  <div class="card-container" id="cardContainer">
+    <!-- Cards will be dynamically populated here -->
+  </div>
+
+  <!-- Back to Home Button -->
+  <button class="btn back-button" onclick="goHome()">Back to Home</button>
+</div>
+
+<script>
+  const API_URL = '/api/fetch'; // Replace with your real API endpoint
+  let fetchedData = []; // To store the fetched data globally for searching
+
+  // Function to render cards dynamically
+  const renderCards = (data) => {
+    const container = document.getElementById('cardContainer');
+    container.innerHTML = ''; // Clear any existing content
+
+    if (data.length === 0) {
+      container.innerHTML = `<p>No records found</p>`;
+      return;
+    }
+
+    data.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      card.innerHTML = `
+        <div class="card-content">
+          <span class="card-title">AWB: ${item.awb}</span>
+          <p><strong>Datetime:</strong> ${item.datetime}</p>
+          <p><strong>Remark:</strong> ${item.remark ? item.remark : 'No remarks'}</p>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  };
+
+  // Fetch data from the API
+  const fetchData = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+
+      // Sort data by the latest entry based on `_id`
+      fetchedData = result.data.sort((a, b) => b._id.localeCompare(a._id));
+
+      renderCards(fetchedData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      const container = document.getElementById('cardContainer');
+      container.innerHTML = `<p style="color: red;">Failed to load data. Please try again later.</p>`;
+    }
+  };
+
+  // Search functionality
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    const filteredData = fetchedData.filter(item =>
+      item.awb.toLowerCase().includes(query) ||
+      item.datetime.toLowerCase().includes(query) ||
+      (item.remark && item.remark.toLowerCase().includes(query))
+    );
+
+    renderCards(filteredData);
+  };
+
+  // Go back to the root
+  const goHome = () => {
+    window.location.href = '/';
+  };
+
+  // Attach event listener to the search input
+  document.getElementById('searchInput').addEventListener('input', handleSearch);
+
+  // Load data on page load
+  fetchData();
+</script>
+
+</body>
+</html>
