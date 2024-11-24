@@ -24,14 +24,20 @@ func main() {
 }
 
 // runGin initializes and returns a Gin engine with predefined routes and handlers.
-// It serves static files from the "./assets" directory and a favicon from "./favicon.ico".
-// The root route ("/") serves the "index.html" file.
-// The "/api/submit" POST route accepts JSON data with "awb", "datetime", and "remark" fields,
-// validates the input, and responds with a success message and the received data.
-// If the input is valid, it connects to the database and uploads the data.
-// The "/api/submit" POST route accepts a JSON payload with "awb", "date", and "time" fields,
-// validates the payload, and responds with a success message and the received data.
-
+// 
+// Routes:
+// - GET /: Serves the index.html file.
+// - POST /api/submit: Accepts JSON data with AWB, DateTime, and Remark fields, validates it, and responds with a success message. The data is then uploaded to the database.
+// - GET /api/fetch: Fetches data from the database and returns it as JSON.
+// - GET /portal: Serves the portal.html file.
+// - POST /api/delete: Accepts JSON data with an AWB field, validates it, and responds with a success message. The corresponding data is then deleted from the database.
+//
+// Static Files:
+// - ./assets: Serves static files from the ./assets directory.
+// - ./favicon.ico: Serves the favicon.ico file.
+//
+// Returns:
+// - *gin.Engine: The initialized Gin engine.
 func runGin() *gin.Engine {
 	router := gin.Default()
 	router.Static("./assets", "./assets")
@@ -53,7 +59,7 @@ func runGin() *gin.Engine {
 		}
 
 		c.JSON(200, gin.H{
-			"message": "Data received successfully",
+			"message": "Data saved successfully",
 			"data":    json,
 		})
 		// Connect to the database and upload the data
@@ -86,7 +92,7 @@ func runGin() *gin.Engine {
 		}
 		c.JSON(200, gin.H{"message": json.AWB + " deleted successfully"})
 		database.ConnectAndDelete(json.AWB)
-		
+
 	})
 
 	return router

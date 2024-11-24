@@ -1,3 +1,31 @@
+<!--
+
+  This HTML file represents the AmazonFlex AWB Portal. It includes the following key sections:
+
+  1. Head Section:
+     - Meta tags for character set and viewport settings.
+     - Title of the page.
+     - Links to Materialize CSS for styling and Material Icons for icons.
+     - Internal CSS for custom styling of the page.
+
+  2. Body Section:
+     - Root div containing the main content of the page.
+     - Header with the title "AmazonFlex AWB Record".
+     - Search container with an input field for searching AWB records.
+     - Card container where AWB records will be dynamically populated.
+     - Back to Home button to navigate back to the home page.
+
+  3. JavaScript Section:
+     - API_URL and DELETE_URL constants for API endpoints.
+     - fetchedData array to store fetched data globally for searching.
+     - escapeHTML function to prevent XSS by escaping HTML characters.
+     - renderCards function to dynamically render AWB records as cards.
+     - fetchData function to fetch data from the API and render cards.
+     - deleteRecord function to delete a record by AWB number.
+     - handleSearch function to filter and render cards based on search input.
+     - goHome function to navigate back to the home page.
+     - Event listener to handle search input and load data on page load.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>

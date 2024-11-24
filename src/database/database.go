@@ -1,3 +1,26 @@
+// ConnectAndUpload connects to the MongoDB database and uploads a document with the given AWB, datetime, and remark.
+// It retrieves the database connection details from environment variables DB_LOGIN, DB_NAME, and DB_COLLECTION.
+// If the document is inserted successfully, it logs a success message; otherwise, it logs the error.
+//
+// Parameters:
+//   - awb: The Air Waybill number to be uploaded.
+//   - datetime: The datetime associated with the AWB.
+//   - remark: Any remark associated with the AWB.
+
+// ConnectAndFetch connects to the MongoDB database and fetches all documents from the specified collection.
+// It retrieves the database connection details from environment variables DB_LOGIN, DB_NAME, and DB_COLLECTION.
+// It returns a slice of bson.M containing all the documents in the collection.
+//
+// Returns:
+//   - []bson.M: A slice of bson.M containing all the documents in the collection.
+
+// ConnectAndDelete connects to the MongoDB database and deletes a document with the given AWB.
+// It retrieves the database connection details from environment variables DB_LOGIN, DB_NAME, and DB_COLLECTION.
+// If the document is deleted successfully, it logs a success message; otherwise, it logs the error.
+// If no document is found with the given AWB, it logs a message indicating that no record was found.
+//
+// Parameters:
+//   - awb: The Air Waybill number to be deleted.
 package database
 
 import (
@@ -10,23 +33,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// ConnectandUpload connects to a MongoDB database and uploads a document with the provided details.
-// It retrieves the database configuration from environment variables.
-//
-// Parameters:
-//   - awb: The airway bill number to be inserted.
-//   - datetime: The datetime string to be inserted.
-//   - remark: The remark string to be inserted.
-//
-// Environment Variables:
-//   - DB_NAME: The name of the database.
-//   - DB_COLLECTION: The name of the collection.
-//   - DB_LOGIN: The MongoDB connection URI.
-//
-// Logs:
-//   - Logs an error if the connection to the database fails.
-//   - Logs an error if the document insertion fails.
-//   - Logs a success message if the document is inserted successfully.
+
 
 
 func ConnectAndUpload(awb string, datetime string, remark string) {
@@ -82,7 +89,6 @@ func ConnectAndDelete(awb string) {
 
 	collection := client.Database(os.Getenv("DB_NAME")).Collection(os.Getenv("DB_COLLECTION"))
 
-	// Use FindOneAndDelete to delete a document and return the deleted one
 	result := collection.FindOneAndDelete(context.Background(), bson.D{{Key: "awb", Value: awb}})
 	if err := result.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -93,7 +99,6 @@ func ConnectAndDelete(awb string) {
 		return
 	}
 
-	// Optional: Decode the deleted document if needed
 	var deletedDoc bson.M
 	if err := result.Decode(&deletedDoc); err != nil {
 		log.Printf("Failed to decode deleted document for AWB %s: %v", awb, err)
