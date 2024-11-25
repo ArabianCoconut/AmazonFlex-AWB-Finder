@@ -145,16 +145,28 @@ Functions:
         <select id="remark" required>
           <option value="" disabled selected>Choose a remark</option>
           <option value="Customer not available">Customer not available</option>
-          <option value="Missed delivery - Bad weather / out of delivery time">Missed delivery</option>
+          <option value="Missed delivery - Bad weather / out of delivery time">
+            Missed delivery
+          </option>
           <option value="Payment Not Ready">Payment Not Ready</option>
-          <option value="Unable to locate address">Unable to locate address</option>
+          <option value="Unable to locate address">
+            Unable to locate address
+          </option>
           <option value="Office closed">Office closed</option>
-          <option value="Unable to contact customer">Unable to contact customer</option>
-          <option value="Rejected - Not Required">Rejected - Not Required</option>
-          <option value="Rejected - Order Mismatch">Rejcted - Order Mismatch</option>
+          <option value="Unable to contact customer">
+            Unable to contact customer
+          </option>
+          <option value="Rejected - Not Required">
+            Rejected - Not Required
+          </option>
+          <option value="Rejected - Order Mismatch">
+            Rejcted - Order Mismatch
+          </option>
           <option value="Parcel is missing">Parcel is missing</option>
           <option value="Rejected - Damaged">Rejected - Damaged</option>
-          <option value="Customer Support marked attempted">Customer Support marked attempted</option>
+          <option value="Customer Support marked attempted">
+            Customer Support marked attempted
+          </option>
         </select>
         <label for="remark">Remark</label>
       </div>
@@ -163,7 +175,12 @@ Functions:
         <button class="btn btn-amazonflex" onclick="openQRScanner()">
           Scan QR
         </button>
-        <button class="btn btn-amazonflex" onclick="window.location.href = '/portal'">Portal</button>
+        <button
+          class="btn btn-amazonflex"
+          onclick="window.location.href = '/portal'"
+        >
+          Portal
+        </button>
       </div>
 
       <!-- QR Scanner Popup -->
@@ -173,7 +190,6 @@ Functions:
           <div id="qr-reader"></div>
         </div>
       </div>
-
     </div>
     <footer
       class="page-footer"
@@ -188,8 +204,8 @@ Functions:
     >
       <p class="white-text" style="margin: 5px 0; text-align: center">
         The AmazonFlex AWB Finder is an independent tool developed to assist
-        drivers in managing AWB numbers and storing for future reference. It is not
-        affiliated with, endorsed by, or officially connected to Amazon.com,
+        drivers in managing AWB numbers and storing for future reference. It is
+        not affiliated with, endorsed by, or officially connected to Amazon.com,
         Inc., or its subsidiaries. Use of this tool is solely at the user's
         discretion, and the developers are not responsible for any inaccuracies,
         delays, or issues arising from its use. Always ensure compliance with
@@ -218,19 +234,19 @@ Functions:
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script>
       let html5QrCode = null;
-    
+
       document.addEventListener("DOMContentLoaded", function () {
         var elems = document.querySelectorAll("select");
         M.FormSelect.init(elems);
       });
-    
+
       function submit() {
         const awb = document.getElementById("awb").value;
         const datetime = new Date().toLocaleString("en-IN", {
           timeZone: "Asia/Kolkata",
         });
         const remark = document.getElementById("remark").value;
-    
+
         fetch("/api/submit", {
           method: "POST",
           headers: {
@@ -242,15 +258,15 @@ Functions:
           .then((data) => alert(data.message))
           .catch((error) => alert("Error submitting form: " + error.message));
       }
-    
+
       function openQRScanner() {
         const qrReaderPopup = document.getElementById("qr-reader-popup");
         qrReaderPopup.style.display = "flex";
-    
+
         if (!html5QrCode) {
           html5QrCode = new Html5Qrcode("qr-reader");
         }
-    
+
         html5QrCode
           .start(
             { facingMode: "environment" },
@@ -273,14 +289,14 @@ Functions:
             alert("Error accessing camera: " + err.message);
           });
       }
-    
+
       function closeQRScanner(event) {
         const qrReaderPopup = document.getElementById("qr-reader-popup");
-    
+
         if (event && event.target !== qrReaderPopup) return;
-    
+
         qrReaderPopup.style.display = "none";
-    
+
         if (html5QrCode) {
           html5QrCode
             .stop()
@@ -292,11 +308,10 @@ Functions:
             });
         }
       }
-    
+
       function stopEventPropagation(event) {
         event.stopPropagation();
       }
     </script>
-    
   </body>
 </html>
