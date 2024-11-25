@@ -218,20 +218,19 @@ Functions:
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script>
       let html5QrCode = null;
-
-      // Initialize Materialize select component
+    
       document.addEventListener("DOMContentLoaded", function () {
         var elems = document.querySelectorAll("select");
         M.FormSelect.init(elems);
       });
-
+    
       function submit() {
         const awb = document.getElementById("awb").value;
         const datetime = new Date().toLocaleString("en-IN", {
           timeZone: "Asia/Kolkata",
         });
         const remark = document.getElementById("remark").value;
-
+    
         fetch("/api/submit", {
           method: "POST",
           headers: {
@@ -243,22 +242,22 @@ Functions:
           .then((data) => alert(data.message))
           .catch((error) => alert("Error submitting form: " + error.message));
       }
-
+    
       function openQRScanner() {
         const qrReaderPopup = document.getElementById("qr-reader-popup");
         qrReaderPopup.style.display = "flex";
-
+    
         if (!html5QrCode) {
           html5QrCode = new Html5Qrcode("qr-reader");
         }
-
+    
         html5QrCode
           .start(
             { facingMode: "environment" },
             {
               fps: 10,
               qrbox: { width: 250, height: 250 },
-              ShowTourchButton: true
+              showTorchButtonIfSupported: true, // Enable torch button if supported
             },
             (decodedText) => {
               document.getElementById("awb").value = decodedText;
@@ -274,15 +273,14 @@ Functions:
             alert("Error accessing camera: " + err.message);
           });
       }
-
+    
       function closeQRScanner(event) {
         const qrReaderPopup = document.getElementById("qr-reader-popup");
-
-        // Close only if clicking outside the content
+    
         if (event && event.target !== qrReaderPopup) return;
-
+    
         qrReaderPopup.style.display = "none";
-
+    
         if (html5QrCode) {
           html5QrCode
             .stop()
@@ -294,11 +292,11 @@ Functions:
             });
         }
       }
-
-      // Prevent click events on the content from closing the popup
+    
       function stopEventPropagation(event) {
         event.stopPropagation();
       }
     </script>
+    
   </body>
 </html>
