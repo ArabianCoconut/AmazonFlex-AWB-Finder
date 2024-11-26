@@ -18,8 +18,8 @@ func main() {
 	}
 
 	gin.SetMode(gin.ReleaseMode)
-	r := runGin()
-	r.Run(":8080")
+	router := runGin()
+	router.Run(":8080")
 
 }
 
