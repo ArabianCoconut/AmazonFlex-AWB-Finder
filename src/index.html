@@ -1,41 +1,37 @@
 <!-- 
 
-This HTML file represents the main page for the AmazonFlex Order Tracker web application. 
-It includes the following key sections and functionalities:
+  This HTML file is the main entry point for the AmazonFlex AWB Finder application.
+  It includes the following key sections and functionalities:
 
-1. Meta Information:
-    - Sets the character encoding to UTF-8.
-    - Sets the viewport for responsive design.
-    - Defines the title of the page as "AmazonFlex Order Issues".
-    - Links to external stylesheets for Material Icons and Materialize CSS.
-    - Links to a favicon.
+  - Head Section:
+    - Meta tags for character set and viewport settings.
+    - Title of the application.
+    - Links to external stylesheets from Google Fonts and Materialize CSS.
+    - Inline CSS styles for custom styling of the application.
 
-2. Custom Styles:
-    - Defines custom styles for various elements including container, buttons, text, logo, and QR reader popup.
+  - Body Section:
+    - Container div for the main content.
+    - Logo and text container displaying the application logo and title.
+    - Input fields for AWB number and remark selection.
+    - Buttons for submitting the form, opening the QR scanner, and navigating to the portal.
+    - QR Scanner popup for scanning AWB numbers using the device camera.
+    - Footer with a disclaimer and a link to the GitHub project.
 
-3. Body Content:
-    - A container that holds the main content of the page.
-    - A logo and text container displaying the AmazonFlex logo and title.
-    - Input fields for AWB (Air Waybill) and remark selection.
-    - Buttons for submitting the form and opening the QR scanner.
+  - Scripts:
+    - Initialization of Materialize CSS components.
+    - Functions for form submission, opening and closing the QR scanner, and handling QR code scanning.
 
-4. QR Scanner Popup:
-    - A hidden popup for QR code scanning, which includes a close button and a div for the QR reader.
+  Key Functions:
+    - submit(): Collects AWB number, current date and time, and selected remark, then sends this data to the server via a POST request.
+    - openQRScanner(): Opens the QR scanner popup and initializes the QR code scanner.
+    - closeQRScanner(event): Closes the QR scanner popup and stops the QR code scanner.
+    - stopEventPropagation(event): Prevents event propagation to avoid closing the QR scanner popup when interacting with its content.
 
-5. Footer:
-    - A footer with a disclaimer about the application's connection to Amazon and a link to the GitHub project.
-
-6. Scripts:
-    - Includes external scripts for Materialize JS and HTML5 QR code scanning.
-    - Initializes the Materialize select component.
-    - Defines functions for form submission, opening and closing the QR scanner, and preventing event propagation.
-
-Functions:
-- submit(): Collects the AWB, current date, and selected remark, then displays them in an alert.
-- openQRScanner(): Opens the QR scanner popup and initializes the QR code scanner.
-- closeQRScanner(event): Closes the QR scanner popup and stops the QR code scanner.
-- stopEventPropagation(event): Prevents click events on the QR reader content from closing the popup.
+  Dependencies:
+    - Materialize CSS for styling and UI components.
+    - Html5Qrcode library for QR code scanning functionality.
 -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -101,19 +97,6 @@ Functions:
         overflow: hidden;
       }
 
-      .qrbox {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 80%;
-        height: 80%;
-        transform: translate(-50%, -50%);
-        border: 4px solid #ff9900;
-        background: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
-        border-radius: 10px;
-      }
-
       #close-popup {
         position: absolute;
         top: 10px;
@@ -156,6 +139,7 @@ Functions:
           <option value="Unable to contact customer">
             Unable to contact customer
           </option>
+          <option value="" disabled>------</option>
           <option value="Rejected - Not Required">
             Rejected - Not Required
           </option>
@@ -164,6 +148,7 @@ Functions:
           </option>
           <option value="Parcel is missing">Parcel is missing</option>
           <option value="Rejected - Damaged">Rejected - Damaged</option>
+          <option value="" disabled>------</option>
           <option value="Customer Support marked attempted">
             Customer Support marked attempted
           </option>
@@ -260,6 +245,16 @@ Functions:
       }
 
       function openQRScanner() {
+        let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
+          let minEdgePercentage = 0.7; // 70%
+          let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+          let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+          return {
+            width: qrboxSize,
+            height: qrboxSize,
+          };
+        };
+
         const qrReaderPopup = document.getElementById("qr-reader-popup");
         qrReaderPopup.style.display = "flex";
 
@@ -272,7 +267,7 @@ Functions:
             { facingMode: "environment" },
             {
               fps: 10,
-              qrbox: { width: 250, height: 250 },
+              qrbox: qrboxFunction,
               showTorchButtonIfSupported: true, // Enable torch button if supported
             },
             (decodedText) => {
