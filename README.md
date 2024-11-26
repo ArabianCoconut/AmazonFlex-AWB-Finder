@@ -32,7 +32,16 @@ The AmazonFlex AWB Finder is a tool or application designed to assist Amazon Fle
     go run main.go
     ```
 
-4. Open `index.html` in your web browser to view the frontend.
+4. Open `localhost:8080` in your web browser to use.
+
+## Docker Method
+
+```docker
+docker pull arabiancoconut/amazonflexawbfinder
+docker run --rm -d -p 8080:8080/tcp arabiancoconut/amazonflexawbfinder:latest
+```
+
+open localhost:8080 on your browser
 
 ## Contributing
 
