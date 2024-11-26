@@ -101,19 +101,6 @@ Functions:
         overflow: hidden;
       }
 
-      .qrbox {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 80%;
-        height: 80%;
-        transform: translate(-50%, -50%);
-        border: 4px solid #ff9900;
-        background: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 0 15px rgba(255, 153, 0, 0.5);
-        border-radius: 10px;
-      }
-
       #close-popup {
         position: absolute;
         top: 10px;
@@ -156,6 +143,7 @@ Functions:
           <option value="Unable to contact customer">
             Unable to contact customer
           </option>
+          <option value="" disabled>------</option>
           <option value="Rejected - Not Required">
             Rejected - Not Required
           </option>
@@ -164,6 +152,7 @@ Functions:
           </option>
           <option value="Parcel is missing">Parcel is missing</option>
           <option value="Rejected - Damaged">Rejected - Damaged</option>
+          <option value="" disabled>------</option>
           <option value="Customer Support marked attempted">
             Customer Support marked attempted
           </option>
@@ -260,6 +249,16 @@ Functions:
       }
 
       function openQRScanner() {
+        let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
+          let minEdgePercentage = 0.7; // 70%
+          let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+          let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+          return {
+            width: qrboxSize,
+            height: qrboxSize,
+          };
+        };
+
         const qrReaderPopup = document.getElementById("qr-reader-popup");
         qrReaderPopup.style.display = "flex";
 
@@ -272,7 +271,7 @@ Functions:
             { facingMode: "environment" },
             {
               fps: 10,
-              qrbox: { width: 250, height: 250 },
+              qrbox: qrboxFunction,
               showTorchButtonIfSupported: true, // Enable torch button if supported
             },
             (decodedText) => {
