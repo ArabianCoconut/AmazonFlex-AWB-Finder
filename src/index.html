@@ -46,7 +46,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
     />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
     <style>
       .container {
         margin-top: 50px;
@@ -121,7 +121,7 @@
       </div>
 
       <div class="input-field">
-        <input id="awb" type="text" class="validate" required />
+        <input id="awb" type="number" class="validate" required />
         <label for="awb">AWB</label>
       </div>
       <div class="input-field">
@@ -217,96 +217,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-    <script>
-      let html5QrCode = null;
-
-      document.addEventListener("DOMContentLoaded", function () {
-        var elems = document.querySelectorAll("select");
-        M.FormSelect.init(elems);
-      });
-
-      function submit() {
-        const awb = document.getElementById("awb").value;
-        const datetime = new Date().toLocaleString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        });
-        const remark = document.getElementById("remark").value;
-
-        fetch("/api/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-          },
-          body: JSON.stringify({ awb, datetime, remark }),
-        })
-          .then((response) => response.json())
-          .then((data) => alert(data.message))
-          .catch((error) => alert("Error submitting form: " + error.message));
-      }
-
-      function openQRScanner() {
-        let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
-          let minEdgePercentage = 0.7; // 70%
-          let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
-          let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
-          return {
-            width: qrboxSize,
-            height: qrboxSize,
-          };
-        };
-
-        const qrReaderPopup = document.getElementById("qr-reader-popup");
-        qrReaderPopup.style.display = "flex";
-
-        if (!html5QrCode) {
-          html5QrCode = new Html5Qrcode("qr-reader");
-        }
-
-        html5QrCode
-          .start(
-            { facingMode: "environment" },
-            {
-              fps: 10,
-              qrbox: qrboxFunction,
-              showTorchButtonIfSupported: true, // Enable torch button if supported
-            },
-            (decodedText) => {
-              document.getElementById("awb").value = decodedText;
-              alert(`Scanned AWB: ${decodedText}`);
-              closeQRScanner(); // Close the popup after scanning
-            },
-            (errorMessage) => {
-              console.log("Scanning error:", errorMessage);
-            }
-          )
-          .catch((err) => {
-            console.error("QR Scanner initialization failed:", err);
-            alert("Error accessing camera: " + err.message);
-          });
-      }
-
-      function closeQRScanner(event) {
-        const qrReaderPopup = document.getElementById("qr-reader-popup");
-
-        if (event && event.target !== qrReaderPopup) return;
-
-        qrReaderPopup.style.display = "none";
-
-        if (html5QrCode) {
-          html5QrCode
-            .stop()
-            .then(() => {
-              html5QrCode = null;
-            })
-            .catch((err) => {
-              console.error("QR Scanner stop failed:", err);
-            });
-        }
-      }
-
-      function stopEventPropagation(event) {
-        event.stopPropagation();
-      }
-    </script>
+    <script src="./assets/script.js"></script>
   </body>
 </html>

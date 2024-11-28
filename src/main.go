@@ -41,7 +41,6 @@ func main() {
 func runGin() *gin.Engine {
 	router := gin.Default()
 	router.Static("./assets", "./assets")
-	router.StaticFile("./favicon.ico", "./favicon.ico")
 	router.GET("/", func(c *gin.Context) {
 		c.File("./index.html")
 	})
